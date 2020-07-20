@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useReducer, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { fetchPopularRepos } from '../utils/api'
 import { FaUser, FaStar, FaCodeBranch, FaExclamationTriangle } from 'react-icons/fa'
@@ -78,6 +78,50 @@ function ReposGrid ({ repos }) {
 ReposGrid.propTypes = {
   repos: PropTypes.array.isRequired
 }
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'success':
+      return {
+        ...state,
+        [action.selectedLang]: action.repos,
+        error: null
+      }
+    case 'ERROR':
+      return {
+        ...state,
+        error: action.error.message
+      }
+    default:
+      throw new Error(`that action type is not supported`)
+  }
+}
+
+
+const Popular = () => {
+  const [selectedLang, setSelectedLang] = useState('All')
+  const [state, dispatch] = useReducer(reducer, { error: null })
+
+  useEffect(() => {
+
+  }, [state])
+  return (
+      <>
+        <LangaugesNav
+          selected={selectedLanguage}
+          onUpdateLanguage={this.updateLanguage}
+        />
+
+        {this.isLoading() && <Loading text='Fetching Repos' />}
+
+        {error && <p className='center-text error'>{error}</p>}
+
+        {repos[selectedLanguage] && <ReposGrid repos={repos[selectedLanguage]} />}
+      </>
+    )
+}
+
+export default Popular
 
 export default class Popular extends React.Component {
   state = {
